@@ -6,7 +6,7 @@ if (Meteor.isClient) {
 
   Template.music.helpers({
     stuff: function () {
-      return Session.get("musicStuff");
+      return Session.get("musicStuff"); 
     }
   });
 
