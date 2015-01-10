@@ -1,0 +1,28 @@
+<head>
+  <title>BIZNUS</title>
+</head>
+
+<body>
+  <h1>Welcome to my Meteor API Handling demo!</h1>
+
+  {{> music}}
+  {{> tv}}
+</body>
+
+<template name="music">
+  <input type="text" name="artist" id="artist" placeholder="Artist"/><button>Search</button>
+  <p><h3>Here's what i found:</h3>
+  {{#each stuff}}
+      <h4>{{name}}</h4>
+      <img src="{{image}}">
+    {{/each}}</p>
+</template>
+
+<template name="tv">
+  <input type="text" name="show" id="show" placeholder="TV Show"/><button>Search</button>
+  <p><h3>Here's what i found:</h3>
+  {{#each stuff}}
+      <h4>{{name}}</h4>
+      <img src="{{image}}">
+    {{/each}}</p>
+</template>
