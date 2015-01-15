@@ -4,7 +4,8 @@
 
 <body>
   <h1>Welcome to my Meteor API Handling demo!</h1>
-
+<!--{{> basic}}-->
+<br>
   {{> music}}
   {{> tv}}
   {{> movie}}
@@ -12,7 +13,8 @@
 </body>
 
 <template name="music">
-  <input type="text" name="artist" id="artist" placeholder="Artist"/><button>Search</button>
+  <input type="text" name="artist" id="artist" placeholder="Artist"/>
+  <button>Search</button>
   <p><h3>Here's what i found:</h3>
   {{#each stuff}}
       <li><h4>{{name}}</h4>
@@ -21,7 +23,7 @@
 </template>
 
 <template name="tv">
-  <input type="text" name="show" id="show" placeholder="TV Show"/><button>Search</button>
+  <input type="text" name="show" id="show" class="show" placeholder="TV Show"/><button>Search</button>
   <p><h3>Here's what i found:</h3>
   {{#each stuff}}
       <h4>{{name}}</h4>
@@ -45,4 +47,21 @@
       <h4>{{name}}</h4>
       <img src="{{image}}">
     {{/each}}</p>
+</template>
+
+<template name="basic">
+	<div>
+		<h2>Using data-source attribute</h2>
+		<div class="form-group">
+			<input class="form-control typeahead" name="team" id="team" type="text" placeholder="NBA teams" autocomplete="off" spellcheck="off" data-source="nba" data-template="repo"/>
+		</div>
+	</div>
+</template>
+
+
+
+<template name="repo">
+       <p class="repo-language">{{language}}</p>
+       <p class="repo-name">{{name}}</p>
+       <p class="repo-description">{{image}}</p>
 </template>

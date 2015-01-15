@@ -1,4 +1,8 @@
 if (Meteor.isClient) {
+  Meteor.startup(function(){
+		// initializes all typeahead instances
+		Meteor.typeahead.inject();
+	});
   // counter starts at 0
   Session.setDefault("musicStuff", "");
   Session.setDefault("tvStuff", "");
@@ -40,27 +44,38 @@ Template.tv.helpers({
       return Session.get("tvStuff");
     }
   });
-
-  Template.tv.events({
-    'click button': function () {
-     console.log(show.value);
-      Meteor.call("searchTVShow", show.value, function(error, results) {
+  
+  var getShows = function(value){
+    Meteor.call("searchTVShow", value, function(error, results) {
         console.log(results); //results.data should be a JSON object
         
         //artist class
         function Show(name,image) {
           this.name = name;
-          this.image = "http://thetvdb.com/banners/" + image;
+          this.image = (image === "") ? "":"http://thetvdb.com/banners/" + image;
         }
         
         shows = [];
-
-        results.Data.Series.forEach(function (item) {
-          shows.push(new Show(item.SeriesName[0],item.banner[0]))
-        });
         
-        Session.set("tvStuff", shows);
+        if (typeof results.Data.Series !== 'undefined'){
+          results.Data.Series.forEach(function (item) {
+            shows.push(new Show(item.SeriesName[0],(typeof item.banner !== 'undefined') ? item.banner[0]: ""))
+          });
+          
+          Session.set("tvStuff", shows);
+        }
     });
+  }
+
+  Template.tv.events({
+    'click button': function () {
+     console.log(show.value);
+     getShows(show.value);
+    },
+    'keyup .show': function () {
+      if(show.value.length > 4)
+      console.log(show.value);
+      getShows(show.value);
     }
   });
 
@@ -100,10 +115,39 @@ Template.movie.helpers({
   });
 
   Template.tv2.events({
-    'click button': function () {
+    'click button, keyup #tv2': function () {
      console.log(tv2.value);
       Meteor.call("searchTV2", tv2.value, function(error, results) {
         console.log(results); //results.data should be a JSON object
+        
+        //artist class
+        function Show(name,image) {
+          this.name = name;
+          this.image = (image === "null") ? "":"http://image.tmdb.org/t/p/w92" + image;
+        }
+        
+        shows = [];
+
+        results.results.forEach(function (item) {
+          if(item.poster_path !== null)
+            shows.push(new Show(item.name,item.poster_path))
+        });
+        
+        Session.set("tv2Stuff", shows);
+    });
+    }
+  });
+  
+  
+  var nba = function(){
+		return Nba.find().fetch().map(function(it){ return it.name; });
+	};
+
+	// simple example
+	Template.basic.helpers({
+		nba: function(){
+      Meteor.call("searchTV2", "sherlock", function(error, results) {
+        console.log(results.results); //results.data should be a JSON object
         
         //artist class
         function Movie(name,image) {
@@ -111,16 +155,16 @@ Template.movie.helpers({
           this.image = "http://image.tmdb.org/t/p/w92" + image;
         }
         
-        movies = [];
-
-        results.results.forEach(function (item) {
-          movies.push(new Movie(item.original_title,item.poster_path))
-        });
-        
-        Session.set("movieStuff", movies);
+        //movies = [];
+        if (Movies.find().count() === 0) {
+          results.results.forEach(function (item) {
+            Movies.insert(item);
+          });
+        }
+        return Movies.find().fetch();
     });
-    }
-  });
+		}
+	});
 }
 
 if (Meteor.isServer) {
@@ -159,4 +203,19 @@ if (Meteor.isServer) {
             return JSON.parse(result.content);
         }
     });
+}
+
+//------------
+
+Nba = new Meteor.Collection("nba");
+Movies = new Meteor.Collection("movies");
+
+if (Meteor.isServer){
+    if (Nba.find().count() === 0) {
+      Nba.insert({name:'Boston Celtics'});
+      Nba.insert({name:'Houston Rockets'});
+      Nba.insert({name:'Los Angeles Lakers'});
+      Nba.insert({name:'Sacramento Kings'});
+      // fill Nba collection
+    }
 }
