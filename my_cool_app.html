@@ -42,11 +42,15 @@
 
 <template name="tv2">
   <input type="text" name="tv2" id="tv2" placeholder="TV Show"/><button>Search</button>
-  <p><h3>Here's what i found:</h3>
+  <h3>Here's what i found:</h3>
   {{#each stuff}}
-      <h4>{{name}}</h4>
-      <img src="{{image}}">
-    {{/each}}</p>
+    <div class="img">
+      <img src="{{image}}"><h4>{{name}}</h4>
+    </div>
+    {{#each seasons}}
+      {{> seasons}}
+    {{/each}}
+    {{/each}}
 </template>
 
 <template name="basic">
@@ -56,6 +60,10 @@
 			<input class="form-control typeahead" name="team" id="team" type="text" placeholder="NBA teams" autocomplete="off" spellcheck="off" data-source="nba" data-template="repo"/>
 		</div>
 	</div>
+</template>
+
+<template name="seasons">
+  {{season_number}} - {{air_date}}
 </template>
 
 

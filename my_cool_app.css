@@ -65,3 +65,105 @@
 .tt-suggestion p {
   margin: 0;
 }
+
+/*instant result css copied from retailmenot.com*/
+
+.instant-results {
+    z-index: 2000;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 3em;
+    background: #fff;
+    border-top: 0;
+    box-shadow: 2px 5px 5px 1px rgba(0,0,0,.2),inset 0 2px 0 0 rgba(0,0,0,.2);
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    border-bottom-left-radius: 3px;
+    border-bottom-right-radius: 3px;
+    -webkit-background-clip: padding-box;
+    -moz-background-clip: padding-box;
+    background-clip: padding-box;
+    overflow: hidden
+}
+
+.lt-ie9 .instant-results {
+    left: 11px
+}
+
+.instant-results.hide {
+    display: none
+}
+
+.instant-results .result {
+    border-top: 1px solid #d1d0c9
+}
+
+.instant-results .result.active {
+    background: #efefe9
+}
+
+.instant-results .result-thumb {
+    display: table-cell;
+    width: 100px;
+    padding: .5em;
+    text-align: center;
+    vertical-align: middle;
+    background: #fff
+}
+
+.instant-results .result-thumb-img {
+    max-width: 50px;
+    max-height: 50px
+}
+
+.instant-results .result-text {
+    padding: .5em;
+    text-align: left
+}
+
+.instant-results .resultTitle {
+    margin: 0
+}
+
+.instant-results .avg-savings {
+    font-size: .875em;
+    margin: 0
+}
+
+.instant-results .result-link {
+    color: #646464;
+    display: table;
+    width: 100%;
+    overflow: hidden;
+    text-decoration: none;
+    padding: .5em
+}
+
+div.img {
+    margin: 5px;
+    padding: 5px;
+    border: 1px solid #0000ff;
+    height: 200px;
+    width: 200px;
+    float: left;
+    text-align: center;
+}
+
+div.img img {
+    display: inline;
+    margin: 5px;
+    border: 1px solid #ffffff;
+}
+
+div.img a:hover img {
+    border:1px solid #0000ff;
+}
+
+div.desc {
+    text-align: center;
+    font-weight: normal;
+    width: 120px;
+    margin: 5px;
+}

@@ -121,20 +121,25 @@ Template.movie.helpers({
         console.log(results); //results.data should be a JSON object
         
         //artist class
-        function Show(name,image) {
+        function Show(name,image,id,seasons) {
+          this.id = id;
           this.name = name;
           this.image = (image === "null") ? "":"http://image.tmdb.org/t/p/w92" + image;
+          this.seasons = seasons;
         }
         
         shows = [];
 
         results.results.forEach(function (item) {
           if(item.poster_path !== null)
-            shows.push(new Show(item.name,item.poster_path))
+            shows.push(new Show(item.name,item.poster_path,item.id,item.seasons))
         });
         
         Session.set("tv2Stuff", shows);
     });
+    },
+    'click div': function () {
+      console.log(this.id);
     }
   });
   
