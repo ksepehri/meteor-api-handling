@@ -10,6 +10,25 @@
   {{> tv}}
   {{> movie}}
   {{> tv2}}
+  {{> seasons}}
+  
+  <div id="playerselect">
+ <div class="navbar">
+  <div class="navbar-inner">
+    <div class="container">
+      <ul class="nav">
+        <li class="dropdown">
+          <a data-toggle="dropdown" class="dropdown-toggle" href="#">Dropdown</a>
+            <ul class="dropdown-menu">
+              <li><a href="#">Link</a></li>
+              <li><a href="#">Link</a></li>
+            </ul>
+        </li>
+      </ul>
+    </div>
+  </div>
+ </div>
+</div>
 </body>
 
 <template name="music">
@@ -17,8 +36,10 @@
   <button>Search</button>
   <p><h3>Here's what i found:</h3>
   {{#each stuff}}
-      <li><h4>{{name}}</h4>
-      <img src="{{image}}"></li>
+      <div class="">
+        <h4>{{name}}</h4>
+      <img src="{{image}}">
+      </div>
     {{/each}}</p>
 </template>
 
@@ -47,9 +68,6 @@
     <div class="img">
       <img src="{{image}}"><h4>{{name}}</h4>
     </div>
-    {{#each seasons}}
-      {{> seasons}}
-    {{/each}}
     {{/each}}
 </template>
 
@@ -63,7 +81,20 @@
 </template>
 
 <template name="seasons">
-  {{season_number}} - {{air_date}}
+  <div class="container">
+      <ul class="nav">
+        <li class="dropdown">
+          <a data-toggle="dropdown" class="dropdown-toggle" href="#">Season</a>
+            <ul class="dropdown-menu">
+              {{#each seasons}}
+                {{#if air_date}}
+                  <li><a href="{{season_number}}"><img src="http://image.tmdb.org/t/s/p/w92{{poster_path}}"> {{season_number}} - {{air_date}}</a></li>
+                {{/if}}
+              {{/each}}
+            </ul>
+        </li>
+      </ul>
+    </div>
 </template>
 
 
