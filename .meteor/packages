@@ -11,3 +11,7 @@ http
 peerlibrary:xml2js
 sergeyt:typeahead
 bootstrap
+meteorhacks:npm
+
+
+npm-container

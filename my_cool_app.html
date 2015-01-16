@@ -7,6 +7,7 @@
 <!--{{> basic}}-->
 <br>
   {{> music}}
+  {{> albums}}
   {{> tv}}
   {{> movie}}
   {{> tv2}}
@@ -41,6 +42,22 @@
       <img src="{{image}}">
       </div>
     {{/each}}</p>
+</template>
+<template name="albums">
+  <div class="container">
+      <ul class="nav">
+        <li class="dropdown">
+          <a data-toggle="dropdown" class="dropdown-toggle" href="#">Album</a>
+            <ul class="scrollable-menu">
+              {{#each albums}}
+                <!-- {{#if first-release-date}} -->
+                  <li><a href="{{collectionViewUrl}}"><img src="{{artworkUrl100}}"> {{collectionName}} - {{releaseDate}}</a></li>
+                <!-- {{/if}} -->
+              {{/each}}
+            </ul>
+        </li>
+      </ul>
+    </div>
 </template>
 
 <template name="tv">

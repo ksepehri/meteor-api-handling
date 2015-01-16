@@ -1,8 +1,8 @@
 if (Meteor.isClient) {
-  Meteor.startup(function(){
-		// initializes all typeahead instances
-		Meteor.typeahead.inject();
-	});
+ //  Meteor.startup(function(){
+	// 	// initializes all typeahead instances
+	// 	Meteor.typeahead.inject();
+	// });
   // counter starts at 0
   Session.setDefault("musicStuff", "");
   Session.setDefault("tvStuff", "");
@@ -15,12 +15,11 @@ if (Meteor.isClient) {
   });
 
   Template.music.events({
-    'click button': function () {
+    'click button, keyup #artist': function () {
      console.log(artist.value);
       Meteor.call("searchArtist", artist.value, function(error, results) {
-        //console.log(results.results.artistmatches.artist);        
-   //results.results.artistmatches.artist.forEach(function (item) {
-        console.log(results.artists); //results.data should be a JSON object
+        console.log(results.results.artistmatches.artist);        
+        //console.log(results.artists); //results.data should be a JSON object
         
         //artist class
         function Artist(name,image,id) {
@@ -31,8 +30,10 @@ if (Meteor.isClient) {
         
         artists = [];
         
-        results.artists.forEach(function (item) {
-          artists.push(new Artist(item.name,null,item.id))
+        results.results.artistmatches.artist.forEach(function (item) {
+        //results.artists.forEach(function (item) {
+          if(item.mbid)
+            artists.push(new Artist(item.name,item.image[3]["#text"],item.mbid))
         });
         
         
@@ -43,7 +44,18 @@ if (Meteor.isClient) {
       console.log(this.name);
        Meteor.call("searchAlbums", this.name, function(error, results) {
          console.log(results);
+         Session.set("albums",results);
        });
+    }
+  });
+
+  Template.albums.created = function() {
+    Session.setDefault("albums", "");
+  }
+  
+  Template.albums.helpers({
+    albums: function() {
+      return Session.get('albums');
     }
   });
 
@@ -122,8 +134,8 @@ Template.movie.helpers({
       console.log(this.id);
       
       Meteor.call("searchSeason2", this.id, function(error, results) {
-        console.log(results.seasons);
-        Session.set('seasons',results.seasons);
+        console.log(results);
+        Session.set('seasons',results);
         
       });
     }
@@ -141,30 +153,95 @@ Template.movie.helpers({
 }
 
 if (Meteor.isServer) {
+  //   Meteor.startup(function(){
+  //   Future = Npm.require('fibers/future');
+  // });
     Meteor.methods({
         searchArtist: function (artist) {
             this.unblock();
-            //result = Meteor.http.call("GET", "http://ws.audioscrobbler.com/2.0/?method=artist.search&artist=" + artist.replace(" ","+") + "&api_key=" + process.env.LASTFM_KEY + "&limit=3&format=json"); //"https://itunes.apple.com/search?term=" + artist.replace(" ","+") + "&entity=musicArtist&limit=3");
-            result = Meteor.http.call("GET", "http://musicbrainz.org/ws/2/artist?query=" + artist.replace(" ","+") + "&fmt=json&limit=3");
+            //use lastfm for artist lookup because their search is good
+            result = Meteor.http.call("GET", "http://ws.audioscrobbler.com/2.0/?method=artist.search&artist=" + artist.replace(" ","+") + "&api_key=" + process.env.LASTFM_KEY + "&limit=3&format=json"); //"https://itunes.apple.com/search?term=" + artist.replace(" ","+") + "&entity=musicArtist&limit=3");
+            //result = Meteor.http.call("GET", "http://musicbrainz.org/ws/2/artist?query=" + artist.replace(" ","+") + "&fmt=json&limit=3");
             return JSON.parse(result.content);
         },
         searchAlbums: function (artist) {
             this.unblock();
-            result = Meteor.http.call("GET", "http://ws.audioscrobbler.com/2.0/?method=artist.gettopalbums&artist=" + artist.replace(" ","+") + "&api_key=" + process.env.LASTFM_KEY + "&format=json"); //"https://itunes.apple.com/search?term=" + artist.replace(" ","+") + "&entity=musicArtist&limit=3");
+            // getting album data from last.fm is no good because the only method is gettopalbums which is wonky and doesn't always return data
+
+            // result = Meteor.http.call("GET", "http://ws.audioscrobbler.com/2.0/?method=artist.gettopalbums&artist=" + artist.replace(" ","+") + "&api_key=" + process.env.LASTFM_KEY + "&format=json"); //"https://itunes.apple.com/search?term=" + artist.replace(" ","+") + "&entity=musicArtist&limit=3");
             
-            json_albums = JSON.parse(result.content).topalbums.album;
+            // json_albums = JSON.parse(result.content).topalbums.album;
             
-            album_details = [];
+            // album_details = [];
             
-            json_albums.forEach(function(item){
-              result = Meteor.http.call("GET", "http://ws.audioscrobbler.com/2.0/?method=album.getinfo&artist=" + artist.replace(" ","+") + "&album=" + item.name.replace(" ","+") + "&api_key=" + process.env.LASTFM_KEY + "&format=json");
-              album = JSON.parse(result.content).album;
-              releasedate = new Date(album.releasedate);
-              if(releasedate.getFullYear() === 2014)
-                album_details.push(album);
-            });
+            // json_albums.forEach(function(item){
+            //   result = Meteor.http.call("GET", "http://ws.audioscrobbler.com/2.0/?method=album.getinfo&artist=" + artist.replace(" ","+") + "&album=" + item.name.replace(" ","+") + "&api_key=" + process.env.LASTFM_KEY + "&format=json");
+            //   album = JSON.parse(result.content).album;
+            //   releasedate = new Date(album.releasedate);
+            //   if(releasedate.getFullYear() === 2014)
+            //     album_details.push(album);
+            // });
             
-            return album_details;
+            //getting data from musicbrainz is no good because the coverart is not always through coverartarchive(sometimes it's amazon) and it's a pain to work around
+            //plus sometimes the mbid is mismatched between lastfm and musicbrainz(ex PHOX)
+            // result = Meteor.http.call("GET", "https://musicbrainz.org/ws/2/release-group?artist=" + mbid + "&type=album&fmt=json");
+
+            // albums = JSON.parse(result.content)["release-groups"];
+
+            // albums.forEach(function (item) {
+            //   // body...http://coverartarchive.org/release/{{id}}/front-250
+            //   url = "http://coverartarchive.org/release/" + item.id + "/front-250";
+            //   console.dir(url);
+            //   result = Meteor.http.call("GET", url);
+            //   item.image = result.content;
+            // });
+
+            //itunes release dates are no good but their collection and images are good.
+            result = Meteor.http.call("GET", "https://itunes.apple.com/search?term=" + artist.replace(" ","+") + "&entity=album");
+
+            albums = JSON.parse(result.content).results;
+
+            //really dirty but since the release dates are sometimes wrong in the api but (mostly) correct on the site 
+            //look up the album and get the real date :(
+          //   var futures = _.map(albums, function(item) {
+              
+          //     var url = "https://itunes.apple.com/album/id" + item.collectionId;
+          //     var future = new Future();
+          //     var onComplete = future.resolver();
+          //     if (item.artistId === artistId) {
+          //       /// Make async http call
+          //       Meteor.http.get(url, function(error, result) {
+          //         if(!error){
+          //           console.dir(url);
+          //           result = Meteor.http.call("GET", url);
+          //           $ = cheerio.load(result.content);
+          //           var releasedate = $('#left-stack > div.lockup.product.album.music > ul > li.release-date').text();
+          //           item.releaseDate = releasedate;
+          //         }
+          //         onComplete(error, releasedate);
+          //       });
+          //     }
+          //     else {
+          //       onComplete('','');
+          //     }
+          //     return future;
+
+          // });
+          // Future.wait(futures);
+
+          //assume the first artist id is the person you want lol
+          artistId = albums[0].artistId;
+
+          //filter based on that artist and sort by album name for sanity
+          filteredAlbums = albums.filter(function(item){ 
+                                            return item.artistId === artistId && item.trackCount > 4; //no EPs!
+                                          }).sort(function(a, b){
+                                                      if(a.collectionName < b.collectionName) return -1;
+                                                      if(a.collectionName > b.collectionName) return 1;
+                                                      return 0;
+                                                  });
+            
+          return filteredAlbums;
         },
         searchTVShow: function (show) {
             this.unblock();
@@ -199,7 +276,9 @@ if (Meteor.isServer) {
             result = Meteor.http.call("GET", "http://api.themoviedb.org/3/tv/" + show + "?api_key=" + process.env.MOVIEDB_KEY);
             //console.dir(result.content);
 
-            return JSON.parse(result.content);
+            return JSON.parse(result.content).seasons.filter(function(item){ 
+                                            return item.season_number > 0; //exclude season 0 cause that's usually extra features or whatever
+                                          });
         }
     });
 }
